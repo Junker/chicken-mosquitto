@@ -37,7 +37,6 @@ chicken-install mosquitto
 ```
   
 
-
 ## API
 ```scheme
 (make-mqtt-client #!key id (clean-session #t) user-data
@@ -47,6 +46,7 @@ chicken-install mosquitto
 - `id`: String to use as the client id.  If `#f`, a random client id will be generated.  If `id` is `#f`, `clean-session` must be `#t`.
 - `clean-session`: set to `#t` to instruct the broker to clean all messages and subscriptions on disconnect, `#f` to instruct it to keep them.  Note that a client will never discard its own outgoing messages on disconnect.  Calling `mqtt-connect` or `mqtt-reconnect` will cause the messages to be resent.  Use `mqtt-reinitialise` to reset a client to its original state.  Must be set to `#t` if the `id` parameter is `#f`.
 -  `user-data`: 
+
 
 ```scheme
 (mqtt-connect client host
@@ -80,19 +80,33 @@ chicken-install mosquitto
 - `reconnect-exp-backoff`: use exponential backoff between reconnect attempts. Set to `#t` to enable exponential backoff.
 - `tcp-nodelay`: Set to `#t` to disable Nagle’s algorithm on client sockets. This has the effect of reducing latency of individual messages at the potential cost of increasing the number of packets being sent. Defaults to `#f`, which means Nagle remains enabled.
 
+
+```scheme
+(mqtt-disconnect client)
+```
+Disconnect from the broker.
+
+
 ```scheme
 (mqtt-loop client #!optional (timeout 1000))
 ```
+The main network loop for the client. This must be called frequently to keep communications between the client and broker working. This is carried out by `mqtt-loop-forever`, which are the recommended ways of handling the network loop. It must not be called inside a callback.
+If incoming data is present it will then be processed.  Outgoing commands, from e.g. `mqtt-publish`, are normally sent immediately that their function is called, but this is not always possible. `mqtt-loop` will also attempt to send any remaining outgoing messages, which also includes commands that are part of the flow for messages with QoS>0.
 - `timeout`: Maximum number of milliseconds to wait for network activity in the select() call before timing out. Set to 0 for instant return.
+
 
 ```
 (mqtt-loop-forever client #!optional (timeout 1000))
 ```
+This function call `mqtt-loop` for you in an infinite blocking loop. It is useful for the case where you only want to run the MQTT client loop in your program.
+It handles reconnecting in case server connection is lost. If you call `mqtt-disconnect` in a callback it will return.
 - `timeout`: Maximum number of milliseconds to wait for network activity in the select() call before timing out. Set to 0 for instant return.
+
 
 ```scheme
 (mqtt-publish client topic payload #!key (qos 0) retain)
 ```
+Publish a message on a given topic.
 - `topic`: null terminated string of the topic to publish to.
 - `payload`: blob or string of data to send.
 - `qos`: integer value 0, 1 or 2 indicating the Quality of Service to be used for the message.
@@ -100,15 +114,19 @@ chicken-install mosquitto
 returns:
 - `mid`: message id of sent message.  Note that although the MQTT protocol doesn’t use message ids for messages with QoS=0, libmosquitto assigns them message ids so they can be tracked with this parameter.
 
+
 ```scheme
 (mqtt-subscribe client sub #!key (qos 0))
 ```
+Subscribe to a topic.
 - `sub`: the subscription pattern.
 - `qos`: the requested Quality of Service for this subscription.
+
 
 ```scheme
 (mqtt-unsubscribe client sub)
 ```
+Unsubscribe from a topic.
 - `sub`: the unsubscription pattern.
 
 ### Callbacks
@@ -159,3 +177,6 @@ Set the message callback.  This is called when a message is received from the br
 - `level`: the log message level from the values: `'log-info` `'log-notice` `'log-warning` `'log-err` `'log-debug`
 - `str`: the message string
 
+
+## Caveats
+- MQTT v5 not supported yet.
