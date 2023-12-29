@@ -25,10 +25,12 @@ chicken-install mosquitto
                                                    (when unexpected?
                                                      (display "Unexpected disconnect :'("))))
 
-    (set-mqtt-client-message-callback! client (lambda (cl msg)
-                                                (display (string->append "Topic: " (mqtt-message-topic msg)
-                                                                         "Payload:" (blob->string (mqtt-message-payload msg))))
-                                                (mqtt-publish client "topic2" "message received, thanks!" )))
+    (set-mqtt-client-message-callback! client
+                                       (lambda (cl msg)
+                                         (display (string->append
+                                                   "Topic: " (mqtt-message-topic msg)
+                                                   "Payload:" (blob->string (mqtt-message-payload msg))))
+                                         (mqtt-publish client "topic2" "message received, thanks!" )))
     (mqtt-connect client "localhost" #:username "mqtt-admin" #:password "mypass")
     (mqtt-subscribe client "topic1")
     (mqtt-loop-forever client)))
@@ -39,22 +41,22 @@ chicken-install mosquitto
 ## API
 ```scheme
 (make-mqtt-client #!key id (clean-session #t) user-data
-                            on-connect on-disconnect on-publish on-message
-                            on-subscribe on-unsubscribe on-log)
+                  on-connect on-disconnect on-publish on-message
+                  on-subscribe on-unsubscribe on-log)
 ```
-- `id`: String to use as the client id.  If `#f`, a random client id will be generated.  If id is `#f`, `clean-session` must be `#t`.
+- `id`: String to use as the client id.  If `#f`, a random client id will be generated.  If `id` is `#f`, `clean-session` must be `#t`.
 - `clean-session`: set to `#t` to instruct the broker to clean all messages and subscriptions on disconnect, `#f` to instruct it to keep them.  Note that a client will never discard its own outgoing messages on disconnect.  Calling `mqtt-connect` or `mqtt-reconnect` will cause the messages to be resent.  Use `mqtt-reinitialise` to reset a client to its original state.  Must be set to `#t` if the `id` parameter is `#f`.
 -  `user-data`: 
 
 ```scheme
 (mqtt-connect client host
-                        #!key (port 1883) (keepalive 5)
-                        bind-address username password
-                        tls-cafile tls-capath tls-certfile tls-keyfile tls-insecure
-                        tls-ocsp-required tls-use-os-certs tls-alpn
-                        socks5-host (socks5-port 1080) socks5-username socks5-password
-                        (reconnect-delay 1) (reconnect-delay-max 10) reconnect-exp-backoff
-                        tcp-nodelay)
+              #!key (port 1883) (keepalive 5)
+              bind-address username password
+              tls-cafile tls-capath tls-certfile tls-keyfile tls-insecure
+              tls-ocsp-required tls-use-os-certs tls-alpn
+              socks5-host (socks5-port 1080) socks5-username socks5-password
+              (reconnect-delay 1) (reconnect-delay-max 10) reconnect-exp-backoff
+              tcp-nodelay)
 ```
 - `host`: the hostname or ip address of the broker to connect to.
 - `port`: the network port to connect to. Default: 1883.
