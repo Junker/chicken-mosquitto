@@ -117,11 +117,13 @@ returns:
 Set the connect callback.  This is called when the broker sends a CONNACK message in response to a connection.
 - `err`: error condition, if `#f` - connection is success.
 
+
 ```scheme
 (set-mqtt-client-disconnect-callback! client (lambda (client unexpected?) ...))
 ```
 Set the disconnect callback. This is called when the broker has received the DISCONNECT command and has disconnected the client.
 - `unexpected?`: boolean value indicating the reason for the disconnect.  A value of `#f` means the client has called `mqtt-disconnect`. `#t` indicates that the disconnect is unexpected.
+
 
 ```scheme
 (set-mqtt-client-publish-callback! client (lambda (client err) ...))
@@ -129,17 +131,25 @@ Set the disconnect callback. This is called when the broker has received the DIS
 Set the publish callback.  This is called when a message initiated with mosquitto_publish has been sent to the broker successfully.
 - `err`: error condition, if `#f` - publish is success.
 
+
 ```scheme
 (set-mqtt-client-message-callback! client (lambda (client message) ...))
 ```
 Set the message callback.  This is called when a message is received from the broker.
 - `message`: the message record.
 
-`(set-mqtt-client-subscribe-callback! client (lambda (client mid) ...))`
+
+```scheme
+(set-mqtt-client-subscribe-callback! client (lambda (client mid) ...))
+```
 - `mid`: the message id of the subscribe message.
 
-`(set-mqtt-client-unsubscribe-callback! client (lambda (client mid) ...))`
+
+```scheme
+(set-mqtt-client-unsubscribe-callback! client (lambda (client mid) ...))
+```
 - `mid`: the message id of the unsubscribe message.
+
 
 ```scheme
 (set-mqtt-client-log-callback! client (lambda (client level str) ...))
