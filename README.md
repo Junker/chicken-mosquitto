@@ -38,6 +38,7 @@ chicken-install mosquitto
   
 
 ## API
+
 ```scheme
 (make-mqtt-client #!key id (clean-session #t) user-data
                   on-connect on-disconnect on-publish on-message
@@ -95,7 +96,7 @@ If incoming data is present it will then be processed.  Outgoing commands, from 
 - `timeout`: Maximum number of milliseconds to wait for network activity in the select() call before timing out. Set to 0 for instant return.
 
 
-```
+```scheme
 (mqtt-loop-forever client #!optional (timeout 1000))
 ```
 This function call `mqtt-loop` for you in an infinite blocking loop. It is useful for the case where you only want to run the MQTT client loop in your program.
@@ -179,4 +180,5 @@ Set the message callback.  This is called when a message is received from the br
 
 
 ## Caveats
+
 - MQTT v5 not supported yet.
