@@ -62,6 +62,12 @@
     (qos mqtt-message-qos)
     (retain mqtt-message-retain))
 
+  (define *log-levels*
+    (list (cons +mosq-log-info+ 'log-info)
+          (cons +mosq-log-notice+ 'log-notice)
+          (cons +mosq-log-warning+ 'log-warning)
+          (cons +mosq-log-err+ 'log-err)
+          (cons +mosq-log-debug+ 'log-debug)))
 
   ;; EXTERNAL CALLBACKS
 
@@ -136,12 +142,7 @@
            (callback (mqtt-client-log-callback client)))
       (when (procedure? callback)
         (callback client
-                  (case level
-                    ((+mosq-log-info+) 'log-info)
-                    ((+mosq-log-notice+) 'log-notice)
-                    ((+mosq-log-warning+) 'log-warning)
-                    ((+mosq-log-err+) 'log-err)
-                    ((+mosq-log-debug+) 'log-debug))
+                  (alist-ref level *log-levels*)
                   str))))
 
 
