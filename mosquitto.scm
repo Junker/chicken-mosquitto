@@ -305,11 +305,10 @@
 
   (define (mqtt-publish client topic payload
                         #!key (qos 0) retain)
-
-    (let ((payload-blob (compiler-typecase payload
-                          (blob payload)
-                          (string (string->blob payload))
-                          (else (error "payload type must be blob or string")))))
+    (let ((payload-blob (cond
+                         ((blob? payload) payload)
+                         ((string? payload) (string->blob payload))
+                         (else (error "payload type must be blob or string")))))
       (let-location ((id int))
         (rc-assert
          (%mosquitto-publish (mqtt-client-mosquitto client)

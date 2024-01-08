@@ -1,4 +1,5 @@
 (repo git "git://github.com/Junker/chicken-mosquitto")
 
 (uri targz "https://github.com/Junker/chicken-mosquitto/tarball/{egg-release}")
+(release "0.1.1")
 (release "0.1.0")
