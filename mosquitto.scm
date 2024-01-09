@@ -93,12 +93,12 @@
 
   (define-external (publish_cb (mosquitto-ptr mosq)
 			                         (c-pointer user-data)
-                               (int rc))
+                               (int mid))
     void
     (let* ((client (mosquitto-ptr-mqtt-client mosq))
            (callback (mqtt-client-publish-callback client)))
       (when (procedure? callback)
-        (callback client (rc->condition rc)))))
+        (callback client mid))))
 
 
   (define-external (message_cb (mosquitto-ptr mosq)
