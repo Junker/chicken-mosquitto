@@ -1,5 +1,23 @@
 (include "mosquitto-foreign.scm")
 (module mosquitto (make-mqtt-client
+		   mqtt-client
+		   mqtt-client?
+		   mqtt-client-mosquitto
+		   mqtt-client-user-data
+		   mqtt-client-connect-callback
+		   mqtt-client-disconnect-callback
+		   mqtt-client-publish-callback
+		   mqtt-client-message-callback
+		   mqtt-client-subscribe-callback
+		   mqtt-client-unsubscribe-callback
+		   mqtt-client-log-callback
+		   mqtt-message
+		   mqtt-message?
+		   mqtt-message-id
+		   mqtt-message-topic
+		   mqtt-message-payload
+		   mqtt-message-qos
+		   mqtt-message-retain
                    mqtt-connect
                    mqtt-reinitialise
                    mqtt-disconnect
@@ -56,8 +74,8 @@
   (define-record-type mqtt-message
     (make-mqtt-message id topic payload qos retain)
     mqtt-message?
-    (id mqtt-mesage-id)
-    (topic mqtt-mesage-topic)
+    (id mqtt-message-id)
+    (topic mqtt-message-topic)
     (payload mqtt-message-payload)
     (qos mqtt-message-qos)
     (retain mqtt-message-retain))
