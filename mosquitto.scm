@@ -11,6 +11,13 @@
 		   mqtt-client-subscribe-callback
 		   mqtt-client-unsubscribe-callback
 		   mqtt-client-log-callback
+                   set-mqtt-client-connect-callback!
+                   set-mqtt-client-disconnect-callback!
+                   set-mqtt-client-publish-callback!
+                   set-mqtt-client-message-callback!
+                   set-mqtt-client-subscribe-callback!
+                   set-mqtt-client-unsubscribe-callback!
+                   set-mqtt-client-log-callback!
 		   mqtt-message
 		   mqtt-message?
 		   mqtt-message-id
@@ -26,23 +33,7 @@
                    mqtt-publish
                    mqtt-subscribe
                    mqtt-unsubscribe
-                   mqtt-mosquitto-lib-version
-                   mqtt-client?
-                   mqtt-client-mosquitto
-                   mqtt-client-connect-callback
-                   mqtt-client-disconnect-callback
-                   mqtt-client-publish-callback
-                   mqtt-client-message-callback
-                   mqtt-client-subscribe-callback
-                   mqtt-client-unsubscribe-callback
-                   mqtt-client-log-callback
-                   set-mqtt-client-connect-callback!
-                   set-mqtt-client-disconnect-callback!
-                   set-mqtt-client-publish-callback!
-                   set-mqtt-client-message-callback!
-                   set-mqtt-client-subscribe-callback!
-                   set-mqtt-client-unsubscribe-callback!
-                   set-mqtt-client-log-callback!)
+                   mqtt-mosquitto-lib-version)
   (import scheme
           (chicken base)
           (chicken foreign)
