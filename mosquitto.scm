@@ -211,8 +211,10 @@
 
   (define (message-ptr->mqtt-message msg-ptr)
     (let* ((payload-len (%mosquitto-message-payloadlen msg-ptr))
-           (payload-blob (make-blob payload-len)))
-      (move-memory! (%mosquitto-message-payload msg-ptr) payload-blob payload-len)
+           (payload-blob (void)))
+      (unless (zero? payload-len)
+	(set! payload-blob (make-blob payload-len))
+	(move-memory! (%mosquitto-message-payload msg-ptr) payload-blob payload-len))
       (make-mqtt-message (%mosquitto-message-mid msg-ptr)
                          (%mosquitto-message-topic msg-ptr)
                          payload-blob
