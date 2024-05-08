@@ -1,16 +1,16 @@
 (include "mosquitto-foreign.scm")
 (module mosquitto (make-mqtt-client
-		   mqtt-client
-		   mqtt-client?
-		   mqtt-client-mosquitto
-		   mqtt-client-user-data
-		   mqtt-client-connect-callback
-		   mqtt-client-disconnect-callback
-		   mqtt-client-publish-callback
-		   mqtt-client-message-callback
-		   mqtt-client-subscribe-callback
-		   mqtt-client-unsubscribe-callback
-		   mqtt-client-log-callback
+                   mqtt-client
+                   mqtt-client?
+                   mqtt-client-mosquitto
+                   mqtt-client-user-data
+                   mqtt-client-connect-callback
+                   mqtt-client-disconnect-callback
+                   mqtt-client-publish-callback
+                   mqtt-client-message-callback
+                   mqtt-client-subscribe-callback
+                   mqtt-client-unsubscribe-callback
+                   mqtt-client-log-callback
                    set-mqtt-client-connect-callback!
                    set-mqtt-client-disconnect-callback!
                    set-mqtt-client-publish-callback!
@@ -18,13 +18,13 @@
                    set-mqtt-client-subscribe-callback!
                    set-mqtt-client-unsubscribe-callback!
                    set-mqtt-client-log-callback!
-		   mqtt-message
-		   mqtt-message?
-		   mqtt-message-id
-		   mqtt-message-topic
-		   mqtt-message-payload
-		   mqtt-message-qos
-		   mqtt-message-retain
+                   mqtt-message
+                   mqtt-message?
+                   mqtt-message-id
+                   mqtt-message-topic
+                   mqtt-message-payload
+                   mqtt-message-qos
+                   mqtt-message-retain
                    mqtt-connect
                    mqtt-reinitialise
                    mqtt-disconnect
@@ -81,7 +81,7 @@
   ;; EXTERNAL CALLBACKS
 
   (define-external (connect_cb (mosquitto-ptr mosq)
-			                         (c-pointer user-data)
+                               (c-pointer user-data)
                                (int rc))
     void
     (let* ((client (mosquitto-ptr-mqtt-client mosq))
@@ -91,7 +91,7 @@
 
 
   (define-external (disconnect_cb (mosquitto-ptr mosq)
-			                            (c-pointer user-data)
+                                  (c-pointer user-data)
                                   (int rc))
     void
     (let* ((client (mosquitto-ptr-mqtt-client mosq))
@@ -101,7 +101,7 @@
 
 
   (define-external (publish_cb (mosquitto-ptr mosq)
-			                         (c-pointer user-data)
+                               (c-pointer user-data)
                                (int mid))
     void
     (let* ((client (mosquitto-ptr-mqtt-client mosq))
@@ -111,7 +111,7 @@
 
 
   (define-external (message_cb (mosquitto-ptr mosq)
-			                         (c-pointer user-data)
+                               (c-pointer user-data)
                                ((const message-ptr) msg))
     void
     (let* ((client (mosquitto-ptr-mqtt-client mosq))
@@ -121,7 +121,7 @@
 
 
   (define-external (subscribe_cb (mosquitto-ptr mosq)
-			                           (c-pointer user-data)
+                                 (c-pointer user-data)
                                  (int mid)
                                  (int qos-count)
                                  ((c-pointer (const int)) granted-qos))
@@ -133,7 +133,7 @@
 
 
   (define-external (unsubscribe_cb (mosquitto-ptr mosq)
-			                             (c-pointer user-data)
+                                   (c-pointer user-data)
                                    (int mid))
     void
     (let* ((client (mosquitto-ptr-mqtt-client mosq))
@@ -143,7 +143,7 @@
 
 
   (define-external (log_cb (mosquitto-ptr mosq)
-			                     (c-pointer user-data)
+                           (c-pointer user-data)
                            (int level)
                            (c-string str))
     void
@@ -213,8 +213,8 @@
     (let* ((payload-len (%mosquitto-message-payloadlen msg-ptr))
            (payload-blob (void)))
       (unless (zero? payload-len)
-	(set! payload-blob (make-blob payload-len))
-	(move-memory! (%mosquitto-message-payload msg-ptr) payload-blob payload-len))
+        (set! payload-blob (make-blob payload-len))
+        (move-memory! (%mosquitto-message-payload msg-ptr) payload-blob payload-len))
       (make-mqtt-message (%mosquitto-message-mid msg-ptr)
                          (%mosquitto-message-topic msg-ptr)
                          payload-blob
