@@ -36,8 +36,7 @@
   (define-syntax define-mcb
     (er-macro-transformer
      (lambda (exp r c)
-       (let (
-             (name (cadr exp))
+       (let ((name (cadr exp))
              (args (cddr exp)))
          `(,(r 'define) ,(string->symbol (string-append "%" (string-translate name "_" "-")))
            (,(r 'foreign-lambda*) void ((mosquitto-ptr mosq_ptr)
