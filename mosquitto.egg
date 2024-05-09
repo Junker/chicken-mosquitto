@@ -1,7 +1,7 @@
 ((synopsis "Bindings to mosquitto MQTT client library")
  (license "MIT")
  (author "Dmitrii Kosenkov")
- (version "0.1.4")
+ (version "0.1.5")
  (test-dependencies test)
  (foreign-dependencies mosquitto)
  (category net)
