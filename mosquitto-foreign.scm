@@ -100,7 +100,7 @@
   (define-mfun int "mosquitto_reinitialise" mosquitto-ptr c-string bool c-pointer)
 
   ;; Will
-  (define-mfun int "mosquitto_will_set" mosquitto-ptr c-string int c-string int bool)
+  (define-mfun int "mosquitto_will_set" mosquitto-ptr c-string int (const blob) int bool)
   (define-mfun int "mosquitto_will_clear" mosquitto-ptr)
 
   ;; Username and password
@@ -129,7 +129,7 @@
   (define-mfun int "mosquitto_loop_write" mosquitto-ptr int)
   (define-mfun int "mosquitto_loop_misc" mosquitto-ptr)
   (define-mfun bool "mosquitto_want_write" mosquitto-ptr)
-
+  (define-mfun int  "mosquitto_socket" mosquitto-ptr)
 
   ;; SOCKS5 proxy functions
   (define-mfun int "mosquitto_socks5_set" mosquitto-ptr c-string int c-string c-string)
@@ -158,9 +158,17 @@
   (define-mfun c-string "mosquitto_strerror" int)
   (define-mfun c-string "mosquitto_connack_string" int)
   (define-mfun c-string "mosquitto_reason_string" int)
-  ;; (define-mfun int "mosquitto_topic_matches_sub" c-string c-string (c-pointer bool))
   (define-mfun int "mosquitto_pub_topic_check" c-string)
   (define-mfun int "mosquitto_sub_topic_check" c-string)
+
+  ;; CHICKEN erroneously defines foreign bool as int, which causes random return
+  ;; values when it is used as out parameter.
+  (define %mosquitto-topic-matches-sub
+    (foreign-lambda* int (((const c-string) sub) ((const c-string) topic) ((c-pointer bool) result))
+      "bool _result = false;
+       int ret = mosquitto_topic_matches_sub(sub, topic, &_result);
+       *result = (int) _result;
+       C_return(ret);"))
 
   (define %errno-strerror
     (foreign-lambda c-string "strerror" int))

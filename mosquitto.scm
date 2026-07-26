@@ -30,10 +30,17 @@
                    mqtt-disconnect
                    mqtt-loop-forever
                    mqtt-loop
+                   mqtt-loop-read
+                   mqtt-loop-write
+                   mqtt-loop-misc
+                   mqtt-socket
+                   mqtt-want-write?
+                   mqtt-will-set
                    mqtt-publish
                    mqtt-subscribe
                    mqtt-unsubscribe
-                   mqtt-mosquitto-lib-version)
+                   mqtt-mosquitto-lib-version
+                   mqtt-topic-matches-sub)
   (import scheme
           (chicken base)
           (chicken foreign)
@@ -188,6 +195,14 @@
         (abort (rc->condition rc))
         rc))
 
+  (define (fd-assert rc)
+    (if (eq? rc -1)
+        (abort
+         (make-composite-condition
+          (make-property-condition 'exn 'message "mosquitto_socket() failed")
+          (make-property-condition 'mqtt)))
+        rc))
+
   (define (errno-assert rc)
     (if (not rc)
         (error (%errno-strerror (foreign-value "errno" int)))
@@ -314,6 +329,30 @@
   (define (mqtt-loop client #!optional (timeout 1000))
     (rc-assert (%mosquitto-loop (mqtt-client-mosquitto client) timeout 1)))
 
+  (define (mqtt-loop-read client)
+    (rc-assert (%mosquitto-loop-read (mqtt-client-mosquitto client) 1)))
+
+  (define (mqtt-loop-write client)
+    (rc-assert (%mosquitto-loop-write (mqtt-client-mosquitto client) 1)))
+
+  (define (mqtt-loop-misc client)
+    (rc-assert (%mosquitto-loop-misc (mqtt-client-mosquitto client))))
+
+  (define (mqtt-socket client)
+    (fd-assert (%mosquitto-socket (mqtt-client-mosquitto client))))
+
+  (define  (mqtt-want-write? client)
+    (%mosquitto-want-write (mqtt-client-mosquitto client)))
+
+  (define (mqtt-will-set client topic payload
+                         #!key (qos 0) retain)
+    (let ((payload-blob (cond
+                         ((blob? payload) payload)
+                         ((string? payload) (string->blob payload))
+                         (else (error "payload type must be blob or string")))))
+      (rc-assert
+       (%mosquitto-will-set (mqtt-client-mosquitto client)
+                            topic (blob-size payload-blob) payload-blob qos retain))))
 
   (define (mqtt-publish client topic payload
                         #!key (qos 0) retain)
@@ -339,4 +378,10 @@
       (rc-assert
        (%mosquitto-unsubscribe (mqtt-client-mosquitto client)
                                (location id) sub))
-      id)))
+      id))
+
+  (define (mqtt-topic-matches-sub sub topic)
+    (let-location ((result bool))
+      (rc-assert
+       (%mosquitto-topic-matches-sub sub topic (location result)))
+      result)))
