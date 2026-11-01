@@ -167,12 +167,12 @@
   ;;  =====
 
   (define (rc->symbol rc)
-    (or (car (rassoc rc *mosq-errors*))
-        'mosq-err-unknown))
+    (cond [(rassoc rc *mosq-errors*) => car]
+          [else 'mosq-err-unknown]))
 
   (define (connack-rc->symbol rc)
-    (or (car (rassoc rc *connack-errors*))
-        'connack-unknown))
+    (cond [(rassoc rc *connack-errors*) => car]
+          [else 'connack-unknown]))
 
   (define (connack-rc->condition rc)
     (if (eq? rc +connack-accepted+)
@@ -192,7 +192,7 @@
 
   (define (rc-assert rc #!optional (err-prefix ""))
     (if (not (eq? rc +mosq-err-success+))
-        (abort (rc->condition rc))
+        (abort (rc->condition rc err-prefix))
         rc))
 
   (define (fd-assert rc)
@@ -209,8 +209,9 @@
         rc))
 
   (define (mqtt-client-finalize client)
-    (alist-delete! (pointer->address (mqtt-client-mosquitto client))
-                   *clients*)
+    (set! *clients*
+      (alist-delete! (pointer->address (mqtt-client-mosquitto client))
+                     *clients*))
     (%mosquitto-destroy (mqtt-client-mosquitto client)))
 
   (define (mosquitto-ptr-mqtt-client ptr)
