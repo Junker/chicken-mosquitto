@@ -288,8 +288,8 @@
                     (not (or tls-certfile tls-keyfile))))
         (rc-assert (%mosquitto-tls-set mosq tls-cafile tls-capath tls-certfile tls-keyfile #f)
                    "TLS: "))
-      (unless tls-insecure
-        (rc-assert (%mosquitto-tls-insecure-set mosq #f)
+      (when tls-insecure
+        (rc-assert (%mosquitto-tls-insecure-set mosq #t)
                    "tls-insecure: "))
       (when tls-ocsp-required
         (rc-assert (%mosquitto-int-option mosq (foreign-value "MOSQ_OPT_TLS_OCSP_REQUIRED" int) 1)
