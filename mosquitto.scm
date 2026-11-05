@@ -46,12 +46,25 @@
           (chicken foreign)
           (chicken condition)
           (chicken locative)
-          (chicken blob)
           (chicken type)
           (only srfi-1 alist-delete!)
           (only (chicken gc) set-finalizer!)
           (only (chicken memory) pointer->address move-memory!)
           (mosquitto foreign))
+
+  ;; We can get away with some simple renaming here. Foreign type
+  ;; declarations, and type annotations still accept blob as an alias to
+  ;; bytevector for compatibility reasons.
+  (cond-expand
+    (chicken-6 (import (rename (only (chicken bytevector)
+                                     bytevector? make-bytevector
+                                     string->utf8 bytevector-length)
+                               (bytevector? blob?)
+                               (make-bytevector make-blob)
+                               (string->utf8 string->blob)
+                               (bytevector-length blob-size))))
+    (chicken-5 (import (only (chicken blob)
+                             blob? make-blob string->blob blob-size))))
 
   (define-type mqtt-client (struct mqtt-client))
   (define-type mqtt-message (struct mqtt-message))

@@ -1,8 +1,14 @@
 (import test
         mosquitto
         (mosquitto foreign)
-        (chicken blob)
         (chicken condition))
+
+(cond-expand
+  (chicken-6 (import (rename (only (chicken bytevector)
+                                   string->utf8 utf8->string)
+                             (string->utf8 string->blob)
+                             (utf8->string blob->string))))
+  (chicken-5 (import (only (chicken blob) string->blob blob->string))))
 
 
 (test-assert "make"

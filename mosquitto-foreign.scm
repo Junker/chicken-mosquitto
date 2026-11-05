@@ -4,7 +4,8 @@
           (chicken foreign)
           (chicken condition)
           (chicken locative)
-          (only (chicken string) string-translate))
+          (only (chicken string) string-translate)
+          (only (chicken syntax) er-macro-transformer))
   (import-for-syntax (only (chicken string) string-translate))
 
   ;; MOSQUITTO API: https://mosquitto.org/api/files/mosquitto-h.html
