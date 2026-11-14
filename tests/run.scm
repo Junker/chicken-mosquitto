@@ -56,3 +56,24 @@
                                                 (display (string->append "Topic: " (mqtt-message-topic msg)
                                                                          "Payload:" (blob->string (mqtt-message-payload msg))))
                                                 (mqtt-publish client "topic2" "message received, thanks!" )))))
+
+(test-group "mqtt-client record"
+  (let ((client (make-mqtt-client #:user-data 'ud)))
+    (test-assert "predicate" (mqtt-client? client))
+    (test "user-data accessor" 'ud (mqtt-client-user-data client))
+    (test-assert "mosquitto handle is non-null"
+      (not (zero? (pointer->address (mqtt-client-mosquitto client)))))
+    (test-assert "fresh client has no message callback"
+      (not (mqtt-client-message-callback client)))
+    (set-mqtt-client-log-callback! client (lambda (_cl level str) str))
+    (test-assert "callback setter installs procedure"
+      (procedure? (mqtt-client-log-callback client)))
+    (test "reinitialise returns success" 0 (mqtt-reinitialise client))))
+
+(test-group "input validation (offline)"
+  (define client (make-mqtt-client))
+  ;; plain `error'/'assert' — any exception
+  (test-error "publish rejects non-string/blob payload"
+              (mqtt-publish client "t" 42))
+  (test-error "tls certfile without ca rejected"
+              (mqtt-connect client "localhost" #:tls-certfile "cert.pem")))
