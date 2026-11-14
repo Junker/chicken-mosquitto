@@ -3,9 +3,24 @@
         (mosquitto foreign)
         (chicken condition))
 
+(cond-expand
+  (chicken-6 (import (rename (only (chicken bytevector)
+                                   string->utf8 utf8->string)
+                             (string->utf8 string->blob)
+                             (utf8->string blob->string))))
+  (chicken-5 (import (only (chicken blob) string->blob blob->string))))
+
 
 (test-assert "make"
   (mqtt-client? (make-mqtt-client)))
+
+(test "set string will" 0
+  (mqtt-will-set (make-mqtt-client) "status" "offline"))
+
+(test "set blob will" 0
+  (mqtt-will-set (make-mqtt-client)
+                 "status"
+                 (string->blob (string #\o #\nul #\f))))
 
 (test-assert "connect-lookup"
   (handle-exceptions exn
@@ -21,6 +36,12 @@
   (handle-exceptions exn
       ((condition-predicate 'err-errno) exn)
     (mqtt-connect (make-mqtt-client) "localhost" #:port 65000)))
+
+(test-assert "socket-not-connected"
+  (handle-exceptions exn
+      ((condition-predicate 'mqtt) exn)
+    (mqtt-socket (make-mqtt-client))
+    #f))
 
 
 (test-assert "set-callbacks"
